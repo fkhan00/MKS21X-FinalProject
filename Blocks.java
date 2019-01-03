@@ -20,3 +20,12 @@ public class Blocks{
         if(cell.get(i).contains(" " + num + " ")){
           return true;}}
     return false;}
+    public boolean legal(int num){
+      // makes sure user doesn't break the rules
+      // by putting a number outside of the range [1,9]
+      // or putting a number that the cell already contains
+      if(num > 9 || num <= 0){
+         return false;}
+      if(cell.contains(num)){
+        return false;}
+      return true;}
