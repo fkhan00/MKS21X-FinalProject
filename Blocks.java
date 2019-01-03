@@ -29,3 +29,8 @@ public class Blocks{
       if(cell.contains(num)){
         return false;}
       return true;}
+    public void add(int num, int x, int y){
+      //checks to see if it is legal
+      // at arraylist y and index x, it sets that value to num
+      if(legal(num)){
+        cell.get(y).set(x, " " + num + " ");}}
