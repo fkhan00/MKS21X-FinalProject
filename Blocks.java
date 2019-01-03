@@ -14,3 +14,9 @@ public class Blocks{
     // accessor method for grid class
     return cell;
   }
+  public boolean contains(int num){
+    // checks if the cell already has that number
+    for(int i = 0; i < 3; i++){
+        if(cell.get(i).contains(" " + num + " ")){
+          return true;}}
+    return false;}
