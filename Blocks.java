@@ -1,9 +1,9 @@
 import java.util.ArrayList;
-public class Blocks{
+public class Block{
   public ArrayList<ArrayList<String>> cell = new ArrayList<ArrayList<String>>();
 // cell is a single box in the sudoku puzzle
 // it contains a 2D array list of Strings which are the numbers in the puzzle
-  public Blocks(){
+  public Block(){
     // this creates a 3X3 arrayList
     // each row being a new arraylist
     for(int i = 0; i < 3; i++){
@@ -40,3 +40,21 @@ public class Blocks{
   public void remove(int x, int y){
     // just sets the String at position (x,y) to default
     cell.get(y).set(x, " _ ");}
+
+  public String toString(){
+    String output = "";
+    output += "\n___________";
+    // creates the initial bar
+    for(int i = 0; i < 3; i++){
+      // at the end of each row put a |
+      // to show its the edge of the box
+      output += "\n|";
+      for(int j = 0; j < 3; j++){
+        output += cell.get(i).get(j);
+      }
+      //move to the next line and repeat
+    output += "|\n";
+  }
+     output += "___________";
+    return output;}
+  }
