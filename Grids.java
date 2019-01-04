@@ -37,5 +37,14 @@ public class Grid extends Block{
         return false;}
       return true;}
 
-
-}
+    public void add(int num, int indexA, int indexB, int x, int y){
+      // calls on the super class' method of add to add to the block
+      if(legal(num, indexA, indexB, x, y)){
+        grid.get(indexA).get(indexB).add(num, x, y);
+      size++;}
+    }
+    public void remove(int indexA, int indexB, int x, int y){
+      // calls on the super class' method of remove to the block
+      grid.get(indexA).get(indexB).remove(x, y);
+      size--;}
+    }
