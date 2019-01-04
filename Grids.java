@@ -47,4 +47,44 @@ public class Grid extends Block{
       // calls on the super class' method of remove to the block
       grid.get(indexA).get(indexB).remove(x, y);
       size--;}
+    public String toString(){
+      // toString built from scratch
+      // 4 level nested for loop to make necessary adjustments to sudoku board
+  String output = "";
+  output += " ______________________________\n";
+  for(int i = 0; i < 3; i++){
+    for(int j = 0; j < 3; j++){
+      for(int k = 0; k < 3; k++){
+        for(int l = 0; l < 3; l++){
+          output += grid.get(i).get(k).getCell().get(j).get(l);
+        }
+        output += "|";
+      }
+      output += "\n";
     }
+    output += "|\n ______________________________\n";
+  }
+  return output;
+}
+public boolean sum(){
+  int sum = 0;
+  for(int i = 0; i < 3; i++){
+    for(int j = 0; j < 3; j++){
+      for(int k = 0; k < 3; k++){
+        for(int l = 0; l < 3; l++){
+          sum += Integer.parseInt(grid.get(i).get(k).getCell().get(j).get(l));}
+        if(sum != 45){
+          return false;}}}}
+  return true;
+}
+public String Solver(){
+  Grid output = new Grid();
+  Random randgen = new Random();
+  while(size != 81){
+    System.out.println(size);
+    output.add(Math.abs(randgen.nextInt() % 10), Math.abs(randgen.nextInt() % 3),
+    Math.abs(randgen.nextInt() % 3),Math.abs(randgen.nextInt() % 3), Math.abs(randgen.nextInt() % 3));
+  }
+    return output.toString();}
+
+}
