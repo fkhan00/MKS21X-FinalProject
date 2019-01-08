@@ -25,7 +25,7 @@ public class Block{
     // makes sure user doesn't break the rules
     // by putting a number outside of the range [1,9]
     // or putting a number that the cell already contains
-    return num < 9 && num > 0 && ! cell.contains(num);}
+    return num <= 9 && num > 0 && ! cell.contains(num);}
 
   public void add(int num, int x, int y){
     //checks to see if it is legal
