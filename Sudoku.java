@@ -1,3 +1,5 @@
+
+
 //API : http://mabe02.github.io/lanterna/apidocs/2.1/
 import com.googlecode.lanterna.terminal.Terminal.SGR;
 import com.googlecode.lanterna.TerminalFacade;
@@ -15,9 +17,42 @@ import com.googlecode.lanterna.input.KeyMappingProfile;
 import java.io.File;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 
 
 public class Sudoku extends Grid{
+	public static int[] xCords(){
+		int[] ary = new int[9];
+		ary[0] = 1;
+		ary[1] = 4;
+		ary[2] = 7;
+		ary[3] = 11;
+		ary[4] = 14;
+		ary[5] = 17;
+		ary[6] = 21;
+		ary[7] = 24;
+		ary[8] = 27;
+		return ary;
+	}
+	public static int[] yCords(){
+		int[] ary = new int[9];
+		ary[0] = 6;
+		ary[1] = 7;
+		ary[2] = 8;
+		ary[3] = 11;
+		ary[4] = 12;
+		ary[5] = 13;
+		ary[6] = 16;
+		ary[7] = 17;
+		ary[8] = 18;
+		return ary;
+	}
+	public static int indexOf(int[] ary, int num){
+		for(int i = 0; i < ary.length; i++){
+			if(ary[i] == num){
+				return i;}}
+		return -1;}
+	// putString() is from Mr.K's terminaldemo
 	public static void putString(int r, int c,Terminal t, String s){
 		t.moveCursor(r,c);
 		for(int i = 0; i < s.length();i++){
@@ -147,7 +182,7 @@ public class Sudoku extends Grid{
 				}
 				if(key.getCharacter() == 'B'){
 					terminal.moveCursor(x,y);
-					puzzle.remove(squareX, squareY, (x-1) % 3, (y-6) % 3);
+					puzzle.remove(squareX, squareY, indexOf(xCords(),x) % 3, indexOf(yCords(), y) % 3);
 					terminal.putCharacter(' ');
 				}
 				else
@@ -155,7 +190,8 @@ public class Sudoku extends Grid{
 					terminal.moveCursor(x, y);
 					try{
 						// if you submit something that's not a number, it will catch and do nothing
-						puzzle.add(Integer.parseInt("" + key.getCharacter()), squareY, squareX,(y-6) % 3, (x-1) % 3);
+						puzzle.add(Integer.parseInt("" + key.getCharacter()),
+						squareY, squareX,indexOf(xCords(),x) % 3, indexOf(yCords(), y) % 3);
 						// need to work on coordinates for x and y
 						terminal.putCharacter(key.getCharacter());}
 					catch(NumberFormatException e){}
