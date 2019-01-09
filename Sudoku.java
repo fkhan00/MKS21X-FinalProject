@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.Random;
 
 
 public class Sudoku extends Grid{
@@ -59,7 +60,7 @@ public class Sudoku extends Grid{
 			t.putCharacter(s.charAt(i));
 		}
 	}
-	public Grid readPuzzle(String file) throws FileNotFoundException{
+	public static Grid readPuzzle(String file) throws FileNotFoundException{
 		// converts info given in file to Sudoku puzzle
 		File input = new File(file);
 		Grid output = new Grid();
@@ -71,8 +72,10 @@ public class Sudoku extends Grid{
 			counter ++;}
 		return output;}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
+		boolean running = true;
 		Grid puzzle = new Grid();
+
 		int old = 0;
 		//Grid puzzle = readPuzzle(args[0]);
 		int x = 1;
@@ -84,8 +87,31 @@ public class Sudoku extends Grid{
 
 		TerminalSize size = terminal.getTerminalSize();
 		terminal.setCursorVisible(false);
-
-		boolean running = true;
+		while(running == true){
+		putString(1,0, terminal, "WELCOME TO PSUEDOSUDOKHAN");
+		putString(1, 3, terminal, "Choose your difficulty");
+		putString(1,4, terminal, "E for easy, M for Medium, H, for Hard");
+		Key key = terminal.readInput();
+		if(key != null){
+		if (key.getKind() == Key.Kind.Escape) {
+			terminal.exitPrivateMode();
+			running = false;}
+		if (key.getCharacter() == 'E') {
+			terminal.clearScreen();
+			running = false;
+			Random randgen = new Random();
+			puzzle = readPuzzle("sE0" + Math.abs(randgen.nextInt() % 3));}
+		if(key.getCharacter() == 'M'){
+			running = false;
+			terminal.clearScreen();
+			Random randgen = new Random();
+			puzzle = readPuzzle("sM0" + Math.abs(randgen.nextInt() % 3));}
+		if(key.getCharacter() == 'H'){
+			running = false;
+			terminal.clearScreen();
+			Random randgen = new Random();
+			puzzle = readPuzzle("sH0" + Math.abs(randgen.nextInt() % 3));}}}
+		running = true;
 
 		long tStart = System.currentTimeMillis();
 		long lastSecond = 0;
