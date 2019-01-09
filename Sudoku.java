@@ -1,5 +1,3 @@
-
-
 //API : http://mabe02.github.io/lanterna/apidocs/2.1/
 import com.googlecode.lanterna.terminal.Terminal.SGR;
 import com.googlecode.lanterna.TerminalFacade;
@@ -18,7 +16,6 @@ import java.io.File;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
-import java.util.Random;
 
 
 public class Sudoku extends Grid{
@@ -68,16 +65,14 @@ public class Sudoku extends Grid{
 		Scanner parse = new Scanner(input);
 		while(parse.hasNextLine()){
 			for(int i = 0; i < parse.nextLine().length(); i++){
-				output.add(parse.nextInt(), counter, counter / 3, counter, i);}
+				output.add(parse.nextInt(), counter / 3, i / 3, counter, i % 3);}
 			counter ++;}
 		return output;}
 
-	public static void main(String[] args) throws FileNotFoundException {
-		boolean running = true;
-		Grid puzzle = new Grid();
-
+	public static void main(String[] args) throws FileNotFoundException{
 		int old = 0;
-		//Grid puzzle = readPuzzle(args[0]);
+		//Grid puzzle = readPuzzle("" + args[0]);
+		Grid puzzle = new Grid();
 		int x = 1;
 		int y = 6;
 		int squareX = 0;
@@ -87,31 +82,8 @@ public class Sudoku extends Grid{
 
 		TerminalSize size = terminal.getTerminalSize();
 		terminal.setCursorVisible(false);
-		while(running == true){
-		putString(1,0, terminal, "WELCOME TO PSUEDOSUDOKHAN");
-		putString(1, 3, terminal, "Choose your difficulty");
-		putString(1,4, terminal, "E for easy, M for Medium, H, for Hard");
-		Key key = terminal.readInput();
-		if(key != null){
-		if (key.getKind() == Key.Kind.Escape) {
-			terminal.exitPrivateMode();
-			running = false;}
-		if (key.getCharacter() == 'E') {
-			terminal.clearScreen();
-			running = false;
-			Random randgen = new Random();
-			puzzle = readPuzzle("sE0" + Math.abs(randgen.nextInt() % 3));}
-		if(key.getCharacter() == 'M'){
-			running = false;
-			terminal.clearScreen();
-			Random randgen = new Random();
-			puzzle = readPuzzle("sM0" + Math.abs(randgen.nextInt() % 3));}
-		if(key.getCharacter() == 'H'){
-			running = false;
-			terminal.clearScreen();
-			Random randgen = new Random();
-			puzzle = readPuzzle("sH0" + Math.abs(randgen.nextInt() % 3));}}}
-		running = true;
+
+		boolean running = true;
 
 		long tStart = System.currentTimeMillis();
 		long lastSecond = 0;
@@ -217,10 +189,11 @@ public class Sudoku extends Grid{
 					try{
 						// if you submit something that's not a number, it will catch and do nothing
 						puzzle.add(Integer.parseInt("" + key.getCharacter()),
-						squareY, squareX,indexOf(xCords(),x) % 3, indexOf(yCords(), y) % 3);
+						squareY, squareX, indexOf(xCords(),x) % 3, indexOf(yCords(), y)% 3);
 						// need to work on coordinates for x and y
 						terminal.putCharacter(key.getCharacter());}
 					catch(NumberFormatException e){}
+					catch(IndexOutOfBoundsException e){}
 				}
 				putString(1,4,terminal,"["+key.getCharacter() +"]");
 				putString(1,1,terminal,key+"        ");//to clear leftover letters pad withspaces
@@ -232,6 +205,12 @@ public class Sudoku extends Grid{
 			putString(1,2,terminal,"Milliseconds since start of program: "+millis);
 			putString(1,3, terminal, "(" + x + " , " + y + ")");
 			putString(1, 4, terminal, "(" + squareX + ", " + squareY +")");
+			putString(55, 0, terminal, "HOW TO PLAY");
+			putString(55, 1, terminal, "The goal of the game is to fill in the grid");
+			putString(55, 2, terminal, "in such a way that all of the rows, columns, and boxes");
+			putString(55, 3, terminal, "contains some arrangement of the sequence [1,9]");
+			putString(55, 4, terminal, "attempting to add a number that already appears in the same");
+			putString(55, 5, terminal, "row, column, or box will not work");
 			if(millis/1000 > lastSecond){
 				lastSecond = millis / 1000;
 				//one second has passed.
