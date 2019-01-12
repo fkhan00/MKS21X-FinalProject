@@ -76,39 +76,58 @@ public class Sudoku extends Grid{
 		if (key.getCharacter() == 'E') {
 			terminal.clearScreen();
 			running = false;
+			terminal.exitPrivateMode();
 			Random randgen = new Random();
 			puzzle = readPuzzle("sE" + (Math.abs(randgen.nextInt() % 3)+ 1) + ".txt");}
 		if(key.getCharacter() == 'M'){
 			running = false;
 			terminal.clearScreen();
+			terminal.exitPrivateMode();
 			Random randgen = new Random();
 			puzzle = readPuzzle("sM" + (Math.abs(randgen.nextInt() % 3) + 1) + ".txt");}
 		if(key.getCharacter() == 'H'){
 			running = false;
 			terminal.clearScreen();
+			terminal.exitPrivateMode();
 			Random randgen = new Random();
 			puzzle = readPuzzle("sH" + (Math.abs(randgen.nextInt() % 3) + 1) + ".txt");}}}
 			return puzzle;
 	}
+	public static String converter(Scanner input){
+		String output = "";
+		while(input.hasNextLine()){
+			output += input.nextLine();
+		}
+		return output;
+	}
 	public static Grid readPuzzle(String file) throws FileNotFoundException{
-    // converts info given in file to Sudoku puzzle
-    File input = new File(file);
-    Grid output = new Grid();
-    int counter = 0;
-    Scanner parse = new Scanner(input);
-    String text = parse.toString();
-    while(counter <= 9){
-      for(int i = 0; i < 18; i++){
-        try{
-        output.add(Integer.parseInt(text.substring(i, i + 1)), counter / 3, i / 3, counter, i % 3);}
-        catch(NumberFormatException e){}}
-      counter ++;}
-    return output;}
+		// converts info given in file to Sudoku puzzle
+		File input = new File(file);
+		Grid output = new Grid();
+		int counter = 0;
+		Scanner parse = new Scanner(input);
+		String text = converter(parse);
+		int index = 0;
+		while(counter < 9){
+			for(int i = 0; i < 16; i++){
+				try{
+				if(i % 3 == 2){
+				output.add(Integer.parseInt(text.substring(index, index + 1)),counter / 3, i / 6, counter % 3, 1);}
+				if(i % 3 == 1){
+				output.add(Integer.parseInt(text.substring(index, index + 1)),counter / 3, i / 6, counter % 3, 2);}
+				if(i % 3 == 0){
+				output.add(Integer.parseInt(text.substring(index, index + 1)),counter / 3, i / 6, counter % 3, 0);}}
+				catch(NumberFormatException e){}
+				index ++;}
+				System.out.println(output.toString());
+			counter ++;}
+		return output;}
 
 	public static void main(String[] args) throws FileNotFoundException{
 		int old = 0;
-		//Grid puzzle = readPuzzle("" + args[0]);
-		Grid puzzle = menu();
+		//Grid puzzle = menu();
+		Grid puzzle = readPuzzle("SM3.txt");
+		puzzle.add(4, 2, 0, 0, 1);
 		int x = 1;
 		int y = 6;
 		int squareX = 0;
@@ -120,7 +139,6 @@ public class Sudoku extends Grid{
 		terminal.setCursorVisible(false);
 
 		boolean running = true;
-		menu();
 		long tStart = System.currentTimeMillis();
 		long lastSecond = 0;
 
@@ -238,7 +256,8 @@ public class Sudoku extends Grid{
 			//DO EVEN WHEN NO KEY PRESSED:
 			long tEnd = System.currentTimeMillis();
 			long millis = tEnd - tStart;
-			putString(1,2,terminal,"Milliseconds since start of program: "+millis);
+			//putString(1,2,terminal,"Milliseconds since start of program: "+millis);
+			putString(0, 0, terminal, "PSUEDOSUDOKHAN PRESENTS:\n SUDOKU");
 			putString(1,3, terminal, "(" + x + " , " + y + ")");
 			putString(1, 4, terminal, "(" + squareX + ", " + squareY +")");
 			putString(55, 0, terminal, "HOW TO PLAY");
@@ -250,7 +269,7 @@ public class Sudoku extends Grid{
 			if(millis/1000 > lastSecond){
 				lastSecond = millis / 1000;
 				//one second has passed.
-				putString(1,3,terminal,"Seconds since start of program: "+lastSecond);
+				//putString(1,3,terminal,"Seconds since start of program: "+lastSecond);
 			}
 		}
 	}
