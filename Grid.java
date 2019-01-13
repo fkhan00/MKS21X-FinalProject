@@ -17,6 +17,10 @@ public class Grid extends Block{
   public boolean containsRow(int num, int indexA, int indexB, int x, int y){
     for(int i = 0; i < 3; i++) {
       for(int k = 0; k < 3; k++){
+        //go through section indexA
+        // keeping x the same as the input and iterating through
+        // with i and k
+        // will tells us if the number repeats in the row
           if(grid.get(indexA).get(i).getCell().get(x).get(k).equals(" " + num + " ")){
             return true;}}}
     return false;
@@ -25,15 +29,18 @@ public class Grid extends Block{
   public boolean containsColumn(int num, int indexA, int indexB, int x, int y){
     for(int i = 0; i < 3; i++) {
       for(int k = 0; k < 3; k++){
-      // going through each block that has the number
+      // use indexB to check the column
+      // iterate through with i and k
+      // and use column y to look for duplicates
           if(grid.get(i).get(indexB).getCell().get(k).get(y).equals(" " + num + " ")){
             return true;}}}
     return false;}
 
   public boolean contains(int num,int indexA, int indexB, int x, int y){
-    //if your block contains the number return true
+    //if your block contains the number
     if(grid.get(indexA).get(indexB).contains(num)) {
       return true;}
+      // if your row or column contains the number
     return containsRow(num, indexA, indexB, x, y) || containsColumn(num, indexA, indexB, x, y);}
 
     public boolean legal(int num, int indexA, int indexB, int x, int y){
@@ -44,11 +51,11 @@ public class Grid extends Block{
 
     public boolean add(int num, int indexA, int indexB, int x, int y){
       // calls on the super class' method of add to add to the block
+      // only allowed to alter grid if legal move is made
       if(legal(num, indexA, indexB, x, y)){
         grid.get(indexA).get(indexB).add(num, x, y);
         size++;
-        return true;
-      }
+      return true;}
       return false;
     }
     public void remove(int indexA, int indexB, int x, int y){
@@ -66,10 +73,13 @@ public class Grid extends Block{
         for(int l = 0; l < 3; l++){
           output += grid.get(i).get(k).getCell().get(j).get(l);
         }
+        // every three numbers put a divider for the block
         output += "|";
       }
+      // every row go to a new line
       output += "\n";
     }
+    // every section make a divider
     output += "|\n ______________________________\n";
   }
   return output;
