@@ -21,7 +21,7 @@ public class Grid extends Block{
         // keeping x the same as the input and iterating through
         // with i and k
         // will tells us if the number repeats in the row
-          if(grid.get(indexA).get(i).getCell().get(x).get(k).equals(" " + num + " ")){
+          if(i!= indexB && k != y && grid.get(indexA).get(i).getCell().get(x).get(k).equals(" " + num + " ")){
             return true;}}}
     return false;
   }
@@ -32,7 +32,7 @@ public class Grid extends Block{
       // use indexB to check the column
       // iterate through with i and k
       // and use column y to look for duplicates
-          if(grid.get(i).get(indexB).getCell().get(k).get(y).equals(" " + num + " ")){
+          if(i != indexA && k != x && grid.get(i).get(indexB).getCell().get(k).get(y).equals(" " + num + " ")){
             return true;}}}
     return false;}
 
