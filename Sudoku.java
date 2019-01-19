@@ -72,6 +72,7 @@ public class Sudoku extends Grid{
 		terminal.setCursorVisible(false);
 		Grid puzzle = new Grid();
 		boolean running = true;
+		// running is false by inputting escape or solving puzzle
 		while(running == true){
 		putString(1,0, terminal, "WELCOME TO PSUEDOSUDOKHAN");
 		putString(1, 3, terminal, "Choose your difficulty");
@@ -164,7 +165,8 @@ public class Sudoku extends Grid{
 		boolean running = true;
 		long tStart = System.currentTimeMillis();
 		long lastSecond = 0;
-
+		// running is false when escape is pressed
+		// or puzzle is solved
 		while(running){
 			// move the cursor to the position x,y
 			terminal.moveCursor(x,y);
@@ -185,8 +187,9 @@ public class Sudoku extends Grid{
 			if (key != null)
 			{
 				// detect keystroke
-				if (key.getKind() == Key.Kind.Escape) {
+				if (key.getKind() == Key.Kind.Escape || puzzle.size == 81) {
 					// user wants out program ends
+					// or user solved puzzle by inputting all numbers in
 					terminal.exitPrivateMode();
 					running = false;
 				}
@@ -197,6 +200,7 @@ public class Sudoku extends Grid{
 					terminal.putCharacter(' ');
 					old = squareX;
 					// old keeps track of your old squareX
+					// x values below are boundaries of squareX
 					if(x < 9){
 						squareX = 0;
 					}
@@ -220,6 +224,8 @@ public class Sudoku extends Grid{
 				if (key.getKind() == Key.Kind.ArrowRight) {
 					terminal.moveCursor(x,y);
 					terminal.putCharacter(' ');
+					// old keeps track of your old squareX
+					// x values below are boundaries of squareX
 					old = squareX;
 					if(x <= 7){
 						squareX = 0;
@@ -231,6 +237,8 @@ public class Sudoku extends Grid{
 						squareX = 2;
 					}
 					if(old != squareX){
+						// the spaces are not uniform at the
+						// boundaries of the block so they're special
 						x+=4;
 					}
 					else{
@@ -252,25 +260,20 @@ public class Sudoku extends Grid{
 				if (key.getKind() == Key.Kind.ArrowDown) {
 					terminal.moveCursor(x,y);
 					terminal.putCharacter(' ');
+					// y values follow a pattern
+					// that I used to keep track of squareY
 					if(y % 5 == 0 && squareY < 2){
 						squareY ++;
 					}
 					y++;
 				}
 				//space moves it diagonally
-				if (key.getCharacter() == ' ') {
-					terminal.moveCursor(x,y);
-					terminal.putCharacter(' ');
-					// a diagonal move
-					y++;
-					x+=3;
-				}
 				if(key.getCharacter() == 'B'){
 					// if you press backspace
 					// you will call the remove method
 					// we know which block you're in
 					// and we can find the x and y coordinates
-					// by modding 3
+					// by modding 3 the indices of the x,y values in their lists
 					terminal.moveCursor(x,y);
 					puzzle.remove(squareX, squareY, indexOf(xCords(),x) % 3, indexOf(yCords(), y) % 3);
 					terminal.putCharacter(' ');
@@ -280,7 +283,9 @@ public class Sudoku extends Grid{
 					terminal.moveCursor(x, y);
 					try{
 						// if you submit something that's not a number, it will catch and do nothing
-						// same reasoning for remove
+						// we know which block you're in
+						// and we can find the x and y coordinates
+						// by modding 3 the indices of the x,y values in their lists
 						puzzle.add(Integer.parseInt("" + key.getCharacter()),
 						squareY, squareX, indexOf(xCords(),x) % 3, indexOf(yCords(), y)% 3);
 						terminal.putCharacter(key.getCharacter());}

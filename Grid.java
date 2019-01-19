@@ -17,6 +17,8 @@ public class Grid extends Block{
   public boolean containsRow(int num, int indexA, int indexB, int x, int y){
     for(int i = 0; i < 3; i++) {
       for(int k = 0; k < 3; k++){
+        //keep horizontal sections indexA and x constant
+        // iterate across the row using i and k
           if( grid.get(indexA).get(i).getCell().get(x).get(k).equals(" " + num + " ")){
             return true;}}}
     return false;
@@ -25,21 +27,25 @@ public class Grid extends Block{
   public boolean containsColumn(int num, int indexA, int indexB, int x, int y){
     for(int i = 0; i < 3; i++) {
       for(int k = 0; k < 3; k++){
-      // going through each block that has the number
+      // keep vertical sections indexB and y constant
+      // iterate down the column using i and k
           if( grid.get(i).get(indexB).getCell().get(k).get(y).equals(" " + num + " ")){
             return true;}}}
     return false;}
 
   public boolean contains(int num,int indexA, int indexB, int x, int y){
-    //if your block contains the number return true
+    //if your block contains the number in row,column, or block return true
     return grid.get(indexA).get(indexB).contains(num) || containsRow(num, indexA, indexB, x, y) || containsColumn(num, indexA, indexB, x, y);}
 
     public boolean legal(int num, int indexA, int indexB, int x, int y){
       // checks to see if your input is a legal move
-      return num <= 9 && num > 0 && !contains(num, indexA, indexB, x, y);}
+      // legal defined as an integer within [1,9]
+      // contains returns false and you're adding into an empty space
+      return grid.get(indexA).get(indexB).getCell().get(x).get(y).equals(" _ ") && num <= 9 && num > 0 && !contains(num, indexA, indexB, x, y);}
 
     public boolean add(int num, int indexA, int indexB, int x, int y){
       // calls on the super class' method of add to add to the block
+      // if legal move you may add and will increase size by 1
       if(legal(num, indexA, indexB, x, y)){
         grid.get(indexA).get(indexB).add(num, x, y);
         size++;

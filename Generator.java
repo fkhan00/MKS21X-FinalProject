@@ -1,35 +1,6 @@
 import java.util.Random;
+import java.util.ArrayList;
 public class Generator extends Grid{
-    public static Grid generator(Grid creation){
-    Grid old = creation;
-    // simple Generator
-    // bashes numbers until it works
-    Random randgen = new Random();
-    int tries = 0;
-    String efficiency = "";
-    int nSize = creation.size;
-    int attempts = 0;
-    while(! sum(creation)){
-      creation = old;
-      // optimize by reducing minimum size to 78
-      // this is minimum number that always gives unique solution
-      while(creation.size != 5000 && attempts < 5000){
-      nSize = creation.size;
-      tries = 0;
-      //fix add methods the no need for sum(creation)
-      // efficiency will increase rapidly
-      //since you're not starting from beginning
-      while(tries < 5000 && nSize == creation.size){
-      creation.add(randgen.nextInt() % 10, Math.abs(randgen.nextInt() % 3), Math.abs(randgen.nextInt() % 3),
-      Math.abs(randgen.nextInt() % 3),Math.abs(randgen.nextInt() % 3));
-      tries ++;}
-      attempts ++;
-    }
-    attempts = 0;
-    efficiency += "*";
-    System.out.println(creation.toString());
-    }
-    return creation;}
 
     public static boolean sum(Grid creation){
       int sum = 0;
@@ -69,14 +40,56 @@ public class Generator extends Grid{
           }
           creation.remove(squareX, squareY, x, y);
           while(tries < 50){
-            if(!generator(creation).toString().equals(original)){
+            if(!generator2(creation).toString().equals(original)){
               if(old != 0){
               creation.add(old, squareX, squareY, x, y);}
               break;}
             tries ++;}}
         return creation;
       }
+      public static ArrayList<Integer> permutation(){
+        //creates a random arragnement of [1,9]
+        Random randgen = new Random();
+        ArrayList<Integer> ary = new ArrayList<Integer>();
+        for(int i = 1; i < 10; i++){
+          // store ordered arrangement
+          ary.add(i);}
+        ArrayList<Integer> output = new ArrayList<Integer>();
+        while(ary.size() > 0 ){
+        // while there is still something to add
+        int submission = Math.abs((randgen.nextInt() % 10));
+        // random number being added
+        if(ary.contains(submission)){
+          // must be in ary so must be a new number
+          output.add(submission);
+          // add to end of output and remove from ary
+          ary.remove(ary.indexOf(submission));}
+      }
+      return output;
+    }
+
+
+      public static Grid generator2(Grid creation){
+        // stores permutation of [1,9]
+        ArrayList<Integer> arrangement = new ArrayList<Integer>();
+        int counter = 0;
+        for(int bR = 0; i < 3; i++){
+          for(int bC = 0; j < 3; j++){
+            // create arrangement which will be stored in block
+            arrangement = permutation();
+            for(int r = 0; k < 3; k++){
+              for(int c = 0; l < 3; l++){
+                counter = 0;
+                System.out.println(creation.toString());
+                while(! creation.add(arrangement.get(counter), bR, bC, r, c)){
+                  // until you find a number you can put in
+                  // go through the arrangment
+                  counter++;}
+                  // remove that number because it wont't work this is for efficiency
+                arrangement.remove(counter);}}}}
+        return creation;}
+
       public static void main(String[] args){
-        System.out.println(generator(new Grid()).toString());
+        System.out.println(generator2(new Grid()).toString());
       }
   }
