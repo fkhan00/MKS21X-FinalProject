@@ -1,82 +1,89 @@
 import java.util.Random;
+import java.util.ArrayList;
+
 public class Generator extends Grid{
-    public static Grid generator(Grid creation){
+  public static Grid generator2(Grid creation){
+    // stores permutation of [1,9]
     Grid old = creation;
-    // simple Generator
-    // bashes numbers until it works
-    Random randgen = new Random();
+    ArrayList<Integer> arrangement = new ArrayList<Integer>();
+    int counter = 0;
     int tries = 0;
-    String efficiency = "";
-    int nSize = creation.size;
-    int attempts = 0;
-    while(! sum(creation)){
-      creation = old;
-      // optimize by reducing minimum size to 78
-      // this is minimum number that always gives unique solution
-      while(creation.size != 5000 && attempts < 5000){
-      nSize = creation.size;
-      tries = 0;
-      //fix add methods the no need for sum(creation)
-      // efficiency will increase rapidly
-      //since you're not starting from beginning
-      while(tries < 5000 && nSize == creation.size){
-      creation.add(randgen.nextInt() % 10, Math.abs(randgen.nextInt() % 3), Math.abs(randgen.nextInt() % 3),
-      Math.abs(randgen.nextInt() % 3),Math.abs(randgen.nextInt() % 3));
-      tries ++;}
-      attempts ++;
-    }
-    attempts = 0;
-    efficiency += "*";
-    System.out.println(creation.toString());
-    }
+    for(int bR = 0; bR < 3; bR++){
+      for(int bC = 0; bC < 3; bC++){
+        System.out.println(creation.toString());
+        for(int r = 0; r < 3; r++){
+          arrangement = permutation();
+          tries = 0;
+          // create arrangement which will be stored in block
+          for(int c = 0; c < 3; c++){
+            counter = 0;
+            while(creation.grid.get(bR).get(bC).getCell().get(r).get(c).equals(" _ ") || !creation.add(arrangement.get(counter), bR, bC, r, c) && counter != 9){
+              // until you find a number you can put in
+              // go through the arrangment
+              //if you're stuck start the block over
+              // if it happens repeatedly restart
+              if(tries == 5){
+                bR = 0;
+                bC = 0;
+                r = 0;
+                c = 0;
+                counter = 0;
+                creation = old;}
+              if(counter == 9){
+                r = 0;
+                c = 0;
+                creation.grid.get(bR).set(bC, old.grid.get(bR).get(bC));
+                tries ++;}
+              counter++;}
+              // remove that number because it wont't work this is for efficiency
+              arrangement.remove(counter);}}}}
     return creation;}
 
-    public static boolean sum(Grid creation){
-      int sum = 0;
-      for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 3; j++){
-          for(int k = 0; k < 3; k++){
-            for(int l = 0; l < 3; l++){
-              try{
-              sum += Integer.parseInt(creation.grid.get(i).get(j).getCell().get(k).get(l).substring(1,2));}
-              catch(NumberFormatException e)
-              {return false;}
-            }}}}
-      if(sum != 45 * 9){
-        return false;}
-      return true;}
+  public static ArrayList<Integer> permutation(){
+    //creates a random arragnement of [1,9]
+    Random randgen = new Random();
+    ArrayList<Integer> ary = new ArrayList<Integer>();
+    for(int i = 1; i < 10; i++){
+      // store ordered arrangement
+      ary.add(i);}
+      ArrayList<Integer> output = new ArrayList<Integer>();
+      while(ary.size() > 0 ){
+      // while there is still something to add
+      int submission = Math.abs((randgen.nextInt() % 10));
+      // random number being added
+      if(ary.contains(submission)){
+        // must be in ary so must be a new number
+        output.add(submission);
+        // add to end of output and remove from ary
+        ary.remove(ary.indexOf(submission));}}
+      return output;}
 
-      public static Grid puzzle(Grid creation, int difficulty){
-        Random randgen = new Random();
-        String original = creation.toString();
-        int tries = 0;
-        int old = 0;
-        int squareX = 0;
-        int squareY = 0;
-        int x = 0;
-        int y = 0;
-        String edited = "";
-        while(creation.size != 50){
-          edited = creation.toString();
-          squareX = Math.abs(randgen.nextInt() % 3);
-          squareY = Math.abs(randgen.nextInt() % 3);
-          x = Math.abs(randgen.nextInt() % 3);
-          y = Math.abs(randgen.nextInt() % 3);
-          try{
-          old = Integer.parseInt(creation.grid.get(squareX).get(squareY).getCell().get(x).get(y));}
-          catch(NumberFormatException e){
-            old = 0;
-          }
-          creation.remove(squareX, squareY, x, y);
-          while(tries < 50){
-            if(!generator(creation).toString().equals(original)){
-              if(old != 0){
-              creation.add(old, squareX, squareY, x, y);}
-              break;}
-            tries ++;}}
-        return creation;
-      }
+  //checks if deletion still yields unique solution
+  public static boolean unique(Grid creation){
+    int counter = 0;
+    //checks fifty times if consecutive calls of generator yield the same solution
+    while(counter < 50){
+      if(! generator2(creation).toString().equals(generator2(creation).toString())){
+        return false;}}
+    return true;}
+
+//puzzle removes elements to make the puzzle
+    public static Grid puzzle(Grid creation, int difficulty){
+      Random randgen = new Random();
+      Grid old = creation;
+      // holds previous pre-trial grid
+      while(creation.size != difficulty){
+        old = creation;
+        // remove a random number from the grid
+        creation.remove(randgen.nextInt() % 3, randgen.nextInt() % 3, randgen.nextInt() % 3, randgen.nextInt() % 3);
+        if(! unique(creation)){
+          //check if grid is still unique
+          //if not set creation back to previous
+          creation = old;}}
+        //once size is achieved return puzzle
+      return creation;}
+
       public static void main(String[] args){
-        System.out.println(generator(new Grid()).toString());
+        System.out.println(generator2(new Grid()).toString());
       }
   }
