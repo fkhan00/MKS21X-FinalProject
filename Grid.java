@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Random;
 public class Grid extends Block{
-  public ArrayList<ArrayList<Block>> grid = new ArrayList<ArrayList<Block>>();
+  public static ArrayList<ArrayList<Block>> grid = new ArrayList<ArrayList<Block>>();
   public int size;
   // grid is an 2D ArrayList of Blocks
   // it is the sudoku puzzle
@@ -46,12 +46,10 @@ public class Grid extends Block{
     public boolean add(int num, int indexA, int indexB, int x, int y){
       // calls on the super class' method of add to add to the block
       // if legal move you may add and will increase size by 1
-      if(legal(num, indexA, indexB, x, y)){
+    //  if(legal(num, indexA, indexB, x, y)){
         grid.get(indexA).get(indexB).add(num, x, y);
         size++;
         return true;
-      }
-      return false;
     }
     public void remove(int indexA, int indexB, int x, int y){
       // calls on the super class' method of remove to the block
@@ -76,5 +74,15 @@ public class Grid extends Block{
   }
   return output;
 }
+  public static int compareTo(Grid other){
+    int counter = 0;
+    for(int i = 0;i < 3; i++){
+    for(int j = 0; j < 3; j++){
+      for(int k = 0; k < 3; k++){
+        for(int l = 0; l < 3; l++){
+          if(! grid.get(i).get(j).getCell().get(k).get(l).
+          equals( other.grid.get(i).get(j).getCell().get(k).get(l)));{
+            counter ++;}}}}}
+    return counter;}
 
 }

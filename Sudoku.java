@@ -16,6 +16,13 @@ import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Random;
+//import com.jdwb.twitterapi;
+import twitter4j.Paging;
+import twitter4j.ResponseList;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
 
 // terminal interface for Sudoku puzzle
 public class Sudoku extends Grid{
@@ -49,6 +56,7 @@ public class Sudoku extends Grid{
 		ary[8] = 18;
 		return ary;
 	}
+	static String solution = "";
 	// custom array method to get indexOf item
 	public static int indexOf(int[] ary, int num){
 		for(int i = 0; i < ary.length; i++){
@@ -63,6 +71,20 @@ public class Sudoku extends Grid{
 			t.putCharacter(s.charAt(i));
 		}
 	}
+	public static boolean sum(Grid creation){
+		 int sum = 0;
+		 for(int i = 0; i < 3; i++){
+			 for(int j = 0; j < 3; j++){
+				 for(int k = 0; k < 3; k++){
+					 for(int l = 0; l < 3; l++){
+						 try{
+						 sum += Integer.parseInt(creation.grid.get(i).get(j).getCell().get(k).get(l).substring(1,2));}
+						 catch(NumberFormatException e)
+						 {return false;}
+					 }}}}
+		 if(sum != 45 * 9){
+			 return false;}
+		 return true;}
 	public static Grid menu() throws FileNotFoundException{
 		// sets up a menu for the user
 		// to choose difficulty
@@ -92,21 +114,25 @@ public class Sudoku extends Grid{
 			Random randgen = new Random();
 			// randomly picks a sudoku file from a pool of easy sudoku files
 			// then uses readPuzzle to convert the file to the puzzle
-			puzzle = readPuzzle("sE" + (Math.abs(randgen.nextInt() % 3)+ 1) + ".txt");}
+			solution = "sE" + (Math.abs(randgen.nextInt() % 3)+ 1) + ".txt";
+			puzzle = readPuzzle(solution);}
 		if(key.getCharacter() == 'M'){
 			running = false;
 			terminal.clearScreen();
 			terminal.exitPrivateMode();
 			Random randgen = new Random();
-			puzzle = readPuzzle("sM" + (Math.abs(randgen.nextInt() % 3) + 1) + ".txt");}
+			solution = "sM" + (Math.abs(randgen.nextInt() % 3)+ 1) + ".txt";
+			puzzle = readPuzzle(solution);}
 		if(key.getCharacter() == 'H'){
 			running = false;
 			terminal.clearScreen();
 			terminal.exitPrivateMode();
 			Random randgen = new Random();
-			puzzle = readPuzzle("sH" + (Math.abs(randgen.nextInt() % 3) + 1) + ".txt");}}}
+			solution = "sH" + (Math.abs(randgen.nextInt() % 3)+ 1) + ".txt";
+			puzzle = readPuzzle(solution);}}}
 			return puzzle;
 	}
+
 	public static String converter(Scanner input){
 		// converts file into string
 		String output = "";
@@ -119,36 +145,32 @@ public class Sudoku extends Grid{
 		// converts info given in file to Sudoku puzzle
 		File input = new File(file);
 		Grid output = new Grid();
-		int counter = 0;
 		Scanner parse = new Scanner(input);
 		String text = converter(parse);
 		// convert file to string
 		int index = 0;
-		while(counter < 9){
+		for(int counter = 0; counter < 9; counter++){
 			// counter keeps track of line number
-			for(int i = 0; i < 16; i++){
+			for(int i = 0; i < 9; i++){
 				// i position on a line
-				try{
 					// get the number
-					// find out which section of the list it is by counter/3
-					// then i/6 gives vertical section of the puzzle
-					// counter % 3 gives which horizontal row you're inserting into
-					// for the y coordinate, i ended up manually creating if statements
-					// since the i values modded are 0,2,1,0,2,1....
-				if(counter == 9){
-					counter = 6;}
-				if(i % 3 == 2){
-				output.add(Integer.parseInt(text.substring(index, index + 1)),counter / 3, i / 6, counter % 3, 1);}
-				if(i % 3 == 1){
-				output.add(Integer.parseInt(text.substring(index, index + 1)),counter / 3, i / 6, counter % 3, 2);}
-				if(i % 3 == 0){
-				output.add(Integer.parseInt(text.substring(index, index + 1)),counter / 3, i / 6, counter % 3, 0);}}
-				catch(NumberFormatException e){}
-				index ++;}
-			counter ++;}
+          // counter/3 gives horizontal section of lists
+          // i / 3 gives vertical section
+					// i % 3 gives row
+					// counter % 3 gives column
+				output.add(Integer.parseInt(text.substring(index, index + 1)),
+        counter / 3, i / 3, i % 3, counter % 3);
+        index ++;
+      }}
 		return output;}
 
 	public static void main(String[] args) throws FileNotFoundException{
+		String name = "";
+		try{
+		 name = args[0];}
+		catch(IndexOutOfBoundsException e){
+			System.out.println("please give your first name");
+		}
 		int old = 0;
 		//Grid puzzle = menu();
 		Grid puzzle = menu();
@@ -188,7 +210,7 @@ public class Sudoku extends Grid{
 			if (key != null)
 			{
 				// detect keystroke
-				if (key.getKind() == Key.Kind.Escape || puzzle.size == 81) {
+				if (key.getKind() == Key.Kind.Escape) {
 					// user wants out program ends
 					// or user solved puzzle by inputting all numbers in
 					terminal.exitPrivateMode();
@@ -316,5 +338,21 @@ public class Sudoku extends Grid{
 				putString(0,26,terminal,"Seconds since start of program: "+lastSecond);
 			}
 		}
+		System.out.println("You got: " + puzzle.compareTo(readPuzzle(solution.substring(0,3) + "S.txt")) + " wrong.");
+		System.out.println(readPuzzle(solution).toString());
+		System.out.println("Congragulations " + name + ". " + "You completed the puzzle in " + lastSecond / 60 + " minutes");
+		Twitter twitter = new TwitterFactory().getInstance();
+		twitter.setOAuthConsumer("ojX2Sf6pcthABwDTvEq0aR1cQ", "bKduV5lO5V0iUf02orkSZApnlLfuyi0s7Mt1HntO3MrxaJ4E1J");
+		twitter.setOAuthAccessToken(new AccessToken("1087149025302859776-IBPDjbiWlWPDP5A3FYoBOwli4GYm9n",
+		"zbShyjiKGKYZsPVt9ACN53S7WXrRsl8npb7d6D1GvHjm7"));
+
+		try{
+			Status status = twitter.updateStatus(name + " completed a sudoku puzzle in " + " in "
+			+ lastSecond / 60 + " minutes");
+			}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+
 	}
 }
