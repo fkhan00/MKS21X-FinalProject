@@ -11,14 +11,16 @@ import com.googlecode.lanterna.input.InputDecoder;
 import com.googlecode.lanterna.input.InputProvider;
 import com.googlecode.lanterna.input.Key;
 import com.googlecode.lanterna.input.KeyMappingProfile;
+import java.io.File;
+import java.util.Scanner;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Random;
 
 // terminal interface for Sudoku puzzle
-public class Sudoku extends Generator{
+public class Sudoku extends Grid{
 	// a list of the x coordinates of points on the terminal
 	//that have a _
-	Grid solution;
 	public static int[] xCords(){
 		int[] ary = new int[9];
 		ary[0] = 1;
@@ -61,7 +63,7 @@ public class Sudoku extends Generator{
 			t.putCharacter(s.charAt(i));
 		}
 	}
-	public static Grid menu(){
+	public static Grid menu() throws FileNotFoundException{
 		// sets up a menu for the user
 		// to choose difficulty
 		Terminal terminal = TerminalFacade.createTextTerminal();
@@ -70,7 +72,7 @@ public class Sudoku extends Generator{
 		terminal.setCursorVisible(false);
 		Grid puzzle = new Grid();
 		boolean running = true;
-		// running is false by inputting escape
+		// running is false by inputting escape or solving puzzle
 		while(running == true){
 		putString(1,0, terminal, "WELCOME TO PSUEDOSUDOKHAN");
 		putString(1, 3, terminal, "Choose your difficulty");
@@ -87,30 +89,71 @@ public class Sudoku extends Generator{
 			running = false;
 			// after pressed will exit out of for loop
 			terminal.exitPrivateMode();
-			solution = generator2(newGrid());
-			puzzle = puzzle(solution, 40);}
+			Random randgen = new Random();
+			// randomly picks a sudoku file from a pool of easy sudoku files
+			// then uses readPuzzle to convert the file to the puzzle
+			puzzle = readPuzzle("sE" + (Math.abs(randgen.nextInt() % 3)+ 1) + ".txt");}
 		if(key.getCharacter() == 'M'){
 			running = false;
 			terminal.clearScreen();
 			terminal.exitPrivateMode();
-			// after pressed will exit out of for loop
-			solution = generator2(newGrid());
-			puzzle = puzzle(solution, 30);
+			Random randgen = new Random();
+			puzzle = readPuzzle("sM" + (Math.abs(randgen.nextInt() % 3) + 1) + ".txt");}
 		if(key.getCharacter() == 'H'){
 			running = false;
 			terminal.clearScreen();
 			terminal.exitPrivateMode();
-			// after pressed will exit out of for loop
-			solution = generator2(new Grid());
-			puzzle = puzzle(solution, 20);}}}
+			Random randgen = new Random();
+			puzzle = readPuzzle("sH" + (Math.abs(randgen.nextInt() % 3) + 1) + ".txt");}}}
 			return puzzle;
 	}
-	public static void main(String[] args){
-		//oldBlock is used to make necessary adjustments when moving between blocks
-		int oldBlock = 0;
+	public static String converter(Scanner input){
+		// converts file into string
+		String output = "";
+		while(input.hasNextLine()){
+			output += input.nextLine();
+		}
+		return output;
+	}
+	public static Grid readPuzzle(String file) throws FileNotFoundException{
+		// converts info given in file to Sudoku puzzle
+		File input = new File(file);
+		Grid output = new Grid();
+		int counter = 0;
+		Scanner parse = new Scanner(input);
+		String text = converter(parse);
+		// convert file to string
+		int index = 0;
+		while(counter < 9){
+			// counter keeps track of line number
+			for(int i = 0; i < 16; i++){
+				// i position on a line
+				try{
+					// get the number
+					// find out which section of the list it is by counter/3
+					// then i/6 gives vertical section of the puzzle
+					// counter % 3 gives which horizontal row you're inserting into
+					// for the y coordinate, i ended up manually creating if statements
+					// since the i values modded are 0,2,1,0,2,1....
+				if(counter == 9){
+					counter = 6;}
+				if(i % 3 == 2){
+				output.add(Integer.parseInt(text.substring(index, index + 1)),counter / 3, i / 6, counter % 3, 1);}
+				if(i % 3 == 1){
+				output.add(Integer.parseInt(text.substring(index, index + 1)),counter / 3, i / 6, counter % 3, 2);}
+				if(i % 3 == 0){
+				output.add(Integer.parseInt(text.substring(index, index + 1)),counter / 3, i / 6, counter % 3, 0);}}
+				catch(NumberFormatException e){}
+				index ++;}
+			counter ++;}
+		return output;}
+
+	public static void main(String[] args) throws FileNotFoundException{
+		int old = 0;
+		//Grid puzzle = menu();
 		Grid puzzle = menu();
-		int row = 1;
-		int col = 6;
+		int x = 1;
+		int y = 6;
 		// keeps track of which block you're in
 		int squareX = 0;
 		int squareY = 0;
@@ -126,8 +169,8 @@ public class Sudoku extends Generator{
 		// running is false when escape is pressed
 		// or puzzle is solved
 		while(running){
-			// move the cursor to the position row,col
-			terminal.moveCursor(row,col);
+			// move the cursor to the position x,y
+			terminal.moveCursor(x,y);
 			terminal.applyBackgroundColor(Terminal.Color.WHITE);
 			terminal.applyForegroundColor(Terminal.Color.BLACK);
 			//applySGR(a,b) for multiple modifiers (bold,blink) etc.
@@ -139,7 +182,7 @@ public class Sudoku extends Generator{
 			terminal.applySGR(Terminal.SGR.RESET_ALL);
 			// this part was used in Mr.K's terminaldemo
 			putString(0, 5, terminal, puzzle.toString());
-			// print the puzzle on the terminal
+			// print the puzzle on the toString
 			Key key = terminal.readInput();
 
 			if (key != null)
@@ -148,82 +191,82 @@ public class Sudoku extends Generator{
 				if (key.getKind() == Key.Kind.Escape || puzzle.size == 81) {
 					// user wants out program ends
 					// or user solved puzzle by inputting all numbers in
-					// prints the solved puzzle
 					terminal.exitPrivateMode();
 					running = false;
-					System.out.println(solution.toString());
 				}
+
 				if (key.getKind() == Key.Kind.ArrowLeft) {
 
 					terminal.moveCursor(x,y);
 					terminal.putCharacter(' ');
-					oldBlock = squareX;
-					// oldBlock keeps track of your old squareX
+					old = squareX;
+					// old keeps track of your old squareX
 					// x values below are boundaries of squareX
-					if(row < 9){
+					if(x < 9){
 						squareX = 0;
 					}
-					if(row > 7 && row < 19){
+					if(x > 7 && x < 19){
 						squareX = 1;
 					}
-					if( row > 16){
+					if(x > 16){
 						squareX = 2;
 					}
 					// sets squareX based on x value
-					if(oldBlock != squareX){
-						row -= 4;
+					if(old != squareX){
+						x -= 4;
 						// the spaces are not uniform at the
 						// boundaries of the block so they're special
 					}
 					else{
 						// to the next slot
-					row -= 3;}
+					x -= 3;}
 				}
 
 				if (key.getKind() == Key.Kind.ArrowRight) {
-					terminal.moveCursor(row,col);
+					terminal.moveCursor(x,y);
 					terminal.putCharacter(' ');
-					// oldBlock keeps track of your old squareX
+					// old keeps track of your old squareX
 					// x values below are boundaries of squareX
-					oldBlock = squareX;
-					if(row <= 7){
+					old = squareX;
+					if(x <= 7){
 						squareX = 0;
 					}
-					if(row > 7 && row < 19){
+					if(x > 7 && x < 19){
 						squareX = 1;
 					}
-					if(row > 16){
+					if(x > 16){
 						squareX = 2;
 					}
-					if(oldBlock != squareX){
+					if(old != squareX){
 						// the spaces are not uniform at the
 						// boundaries of the block so they're special
-						row+=4;
+						x+=4;
 					}
 					else{
-					row += 3;}
+					x += 3;}
 				}
 
 				if (key.getKind() == Key.Kind.ArrowUp) {
 					terminal.moveCursor(x,y);
 					terminal.putCharacter(' ');
+					old = squareY;
 					// y values follow a pattern
 					// that I used to keep track of squareY
-					if(col % 5 == 0 && squareY > 0){
+					if(y % 5 == 0 && squareY > 0){
 						squareY --;
 					}
-					col--;
+					y--;
 				}
 
 				if (key.getKind() == Key.Kind.ArrowDown) {
-					terminal.moveCursor(row,col);
+					terminal.moveCursor(x,y);
 					terminal.putCharacter(' ');
 					// y values follow a pattern
 					// that I used to keep track of squareY
-					if(col % 5 == 0 && squareY < 2){
+					if(y % 5 == 0 && squareY < 2){
 						squareY ++;
 					}
-					col++;
+					y++;
 				}
 				//space moves it diagonally
 				if(key.getCharacter() == 'B'){
@@ -232,27 +275,20 @@ public class Sudoku extends Generator{
 					// we know which block you're in
 					// and we can find the x and y coordinates
 					// by modding 3 the indices of the x,y values in their lists
-					terminal.moveCursor(row, col);
-					puzzle.remove(squareX, squareY, indexOf(xCords(),row) % 3, indexOf(yCords(), col) % 3);
+					terminal.moveCursor(x,y);
+					puzzle.remove(squareX, squareY, indexOf(xCords(),x) % 3, indexOf(yCords(), y) % 3);
 					terminal.putCharacter(' ');
-				}
-				if(key.getCharacter() == 'h'){
-					// if they want a hint, give them the number of the the slot they're in
-					try{
-					puzzle.add(solution.grid.get(squareY).get(squareX).getCell().get(indexOf(xCords(),row) % 3)
-					.get(indexOf(yCords(), col)% 3), squareY, squareX, indexOf(xCords(), row) % 3, indexOf(xCords(), row)% 3);}
-					catch(IndexOutOfBoundsException e){}
 				}
 				else
 				{
-					terminal.moveCursor(row, col);
+					terminal.moveCursor(x, y);
 					try{
 						// if you submit something that's not a number, it will catch and do nothing
 						// we know which block you're in
 						// and we can find the x and y coordinates
 						// by modding 3 the indices of the x,y values in their lists
 						puzzle.add(Integer.parseInt("" + key.getCharacter()),
-						squareX, squareY, indexOf(xCords(),row) % 3, indexOf(yCords(), col)% 3);
+						squareY, squareX, indexOf(xCords(),x) % 3, indexOf(yCords(), y)% 3);
 						terminal.putCharacter(key.getCharacter());}
 					catch(NumberFormatException e){}
 					catch(IndexOutOfBoundsException e){}
@@ -266,7 +302,7 @@ public class Sudoku extends Generator{
 			long millis = tEnd - tStart;
 			// basic instructions for the user
 			putString(0, 0, terminal, "PSUEDOSUDOKHAN PRESENTS:\n SUDOKU");
-			putString(1,3, terminal, "(" + row + " , " + col + ")");
+			putString(1,3, terminal, "(" + x + " , " + y + ")");
 			putString(1, 4, terminal, "(" + squareX + ", " + squareY +")");
 			putString(55, 0, terminal, "HOW TO PLAY");
 			putString(55, 2, terminal, "The goal of the game is to fill in the grid");
@@ -274,11 +310,10 @@ public class Sudoku extends Generator{
 			putString(55, 6, terminal, "contains some arrangement of the sequence [1,9]");
 			putString(55, 8, terminal, "attempting to add a number that already appears in the same");
 			putString(55, 10, terminal, "row, column, or box will not work");
-			putString(55, 12, terminal, "if you get stuck press h for a hint");
 			if(millis/1000 > lastSecond){
 				lastSecond = millis / 1000;
 				//one second has passed.
-				//putString(1,3,terminal,"Seconds since start of program: "+lastSecond);
+				putString(0,26,terminal,"Seconds since start of program: "+lastSecond);
 			}
 		}
 	}
